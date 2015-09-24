@@ -80,7 +80,7 @@
     
     NSURL *authURL = nil;
     
-    if (universalLinksSupported) {
+    if (universalLinksSupported && hasUniversalCallback) {
         NSString *urlEncodedCallbackString = nil;
         if (hasUniversalCallback) {
             urlEncodedCallbackString = [self urlEncodedStringForString:universalURICallbackString];
