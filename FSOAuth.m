@@ -20,22 +20,6 @@
 #define kFoursquareAppStoreURL @"https://itunes.apple.com/app/foursquare/id306934924?mt=8"
 #define kFoursquareAppStoreID @306934924
 
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
-#import <StoreKit/StoreKit.h>
-#endif
-
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
-#import <SafariServices/SafariServices.h>
-#endif
-
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
-@interface FSOAuth () <SFSafariViewControllerDelegate>
-
-@property (nonatomic) SFSafariViewController *safariVC;
-
-@end
-#endif
-
 @implementation FSOAuth
 
 + (FSOAuth *)shared {
@@ -93,53 +77,19 @@
 
     if (!isOnIOS9OrLater) {
         if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
-            if (allowShowingAppStore) {
-                [self launchAppStoreOrShowStoreKitModalFromViewController:presentFromViewController];
-            }
-            
             return FSOAuthStatusErrorFoursquareNotInstalled;
         }
     }
     
-    NSURL *authURL = nil;
+    NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
     
-    if (isOnIOS9OrLater) {
-        NSString *urlEncodedCallbackString = nil;
-        if (hasUniversalCallback) {
-            urlEncodedCallbackString = [self urlEncodedStringForString:universalURICallbackString];
-        }
-        else {
-            urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
-        }
-        
-        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/native/oauth2/authenticate?client_id=%@&redirect_uri=%@&response_type=code", clientID, urlEncodedCallbackString]];
-        
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
-        self.safariVC = [[SFSafariViewController alloc] initWithURL:authURL];
-        self.safariVC.delegate = self;
-        
-        [presentFromViewController presentViewController:self.safariVC
-                                                animated:YES
-                                              completion:nil];
-#else
-        [sharedApplication openURL:authURL];
-#endif
+    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+    
+    if (![sharedApplication canOpenURL:authURL]) {
+        return FSOAuthStatusErrorFoursquareOAuthNotSupported;
     }
-    else {
-        NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
-        
-        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
-        
-        if (![sharedApplication canOpenURL:authURL]) {
-            if (allowShowingAppStore) {
-                [self launchAppStoreOrShowStoreKitModalFromViewController:presentFromViewController];
-            }
-            
-            return FSOAuthStatusErrorFoursquareOAuthNotSupported;
-        }
-        
-        [sharedApplication openURL:authURL];
-    }
+    
+    [sharedApplication openURL:authURL];
     
     return FSOAuthStatusSuccess;
 }
@@ -171,12 +121,6 @@
     if (errorCode != NULL) {
         *errorCode = FSOAuthErrorUnknown;
     }
-    
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
-    [self.safariVC dismissViewControllerAnimated:YES
-                                      completion:nil];
-    self.safariVC = nil;
-#endif
     
     NSArray *parameterPairs = [[url query] componentsSeparatedByString:@"&"];
     
@@ -237,29 +181,6 @@
     }
 }
 
--(void)launchAppStoreOrShowStoreKitModalFromViewController:(UIViewController *)fromViewController {
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
-    if ([SKStoreProductViewController class]) {
-        SKStoreProductViewController *storeViewController = [SKStoreProductViewController new];
-        storeViewController.delegate = (id<SKStoreProductViewControllerDelegate>)self;
-        [storeViewController loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier : kFoursquareAppStoreID}
-                                       completionBlock:nil];
-        
-        [fromViewController presentViewController:storeViewController animated:YES completion:nil];
-    }
-    else
-#endif
-    {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
-    }
-}
-
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
-- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
-    [viewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-}
-#endif
-
 - (NSString *)urlEncodedStringForString:(NSString *)string {
     NSString *urlEncodedString = nil;
     // Introduced in iOS 7, -stringByAddingPercentEncodingWithAllowedCharacters: replaces CFURLCreateStringByAddingPercentEscapes (deprecated in iOS 9).
@@ -299,15 +220,5 @@
 #pragma clang diagnostic pop
     }
 }
-
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
-#pragma mark - SFSafariViewControllerDelegate
-
-- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    if (controller == self.safariVC) {
-        self.safariVC = nil;
-    }
-}
-#endif
 
 @end
