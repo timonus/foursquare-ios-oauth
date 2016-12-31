@@ -17,8 +17,6 @@
 #import "FSOAuth.h"
 
 #define kFoursquareOAuthRequiredVersion @"20130509"
-#define kFoursquareAppStoreURL @"https://itunes.apple.com/app/foursquare/id306934924?mt=8"
-#define kFoursquareAppStoreID @306934924
 
 @implementation FSOAuth
 
