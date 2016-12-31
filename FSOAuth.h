@@ -78,7 +78,6 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString * _Nullable authToken, BO
  */
 - (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(nullable NSString *)nativeURICallbackString
-                     universalURICallbackString:(nullable NSString *)universalURICallbackString
                            allowShowingAppStore:(BOOL)allowShowingAppStore
                       presentFromViewController:(UIViewController *)presentFromViewController;
 

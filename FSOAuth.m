@@ -34,7 +34,6 @@
 
 - (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(NSString *)nativeURICallbackString
-                     universalURICallbackString:(NSString *)universalURICallbackString
                            allowShowingAppStore:(BOOL)allowShowingAppStore
                       presentFromViewController:(UIViewController *)presentFromViewController {
     if ([clientID length] <= 0) {
@@ -43,18 +42,9 @@
 
     UIApplication *sharedApplication = [UIApplication sharedApplication];
     BOOL hasNativeCallback = ([nativeURICallbackString length] > 0);
-    BOOL hasUniversalCallback = ([universalURICallbackString length] > 0);
     
-    if (!hasNativeCallback && !hasUniversalCallback) {
+    if (!hasNativeCallback) {
         return FSOAuthStatusErrorInvalidCallback;
-    }
-
-    if (hasUniversalCallback) {
-        NSString *urlScheme = [[NSURL URLWithString:universalURICallbackString] scheme];
-        if (![urlScheme isEqualToString:@"http"]
-            && ![urlScheme isEqualToString:@"https"]) {
-            return FSOAuthStatusErrorInvalidCallback;
-        }
     }
 
     BOOL isOnIOS9OrLater = NO;
