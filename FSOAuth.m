@@ -71,9 +71,13 @@
         }
     }
     
-    NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
-    
-    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+    NSURLComponents *components = [NSURLComponents componentsWithString:@"foursquareauth://authorize"];
+    components.queryItems = @[
+                              [NSURLQueryItem queryItemWithName:@"client_id" value:clientID],
+                              [NSURLQueryItem queryItemWithName:@"v" value:kFoursquareOAuthRequiredVersion],
+                              [NSURLQueryItem queryItemWithName:@"redirect_uri" value:nativeURICallbackString]
+                              ];
+    NSURL *authURL = components.URL;
     
     if (![sharedApplication canOpenURL:authURL]) {
         return FSOAuthStatusErrorFoursquareOAuthNotSupported;
@@ -146,68 +150,38 @@
         && [callbackURIString length] > 0
         && [clientSecret length] > 0) {
         
-        NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
+        NSURLComponents *components = [NSURLComponents componentsWithString:@"https://foursquare.com/oauth2/access_token"];
+        components.queryItems = @[
+                                  [NSURLQueryItem queryItemWithName:@"client_id" value:clientID],
+                                  [NSURLQueryItem queryItemWithName:@"client_secret" value:clientSecret],
+                                  [NSURLQueryItem queryItemWithName:@"grant_type" value:@"authorization_code"],
+                                  [NSURLQueryItem queryItemWithName:@"redirect_uri" value:callbackURIString],
+                                  [NSURLQueryItem queryItemWithName:@"code" value:accessCode]
+                                  ];
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/oauth2/access_token?client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&code=%@", clientID, clientSecret, urlEncodedCallbackString, accessCode]]];
-        
-        [self sendAsynchronousRequest:request completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [[[NSURLSession sharedSession] dataTaskWithURL:components.URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSString *accessToken = nil;
+            BOOL requestCompleted = NO;
+            FSOAuthErrorCode errorCode = FSOAuthErrorUnknown;
             if (data && [[response MIMEType] isEqualToString:@"application/json"]) {
                 id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
                 if ([jsonObj isKindOfClass:[NSDictionary class]]) {
                     NSDictionary *jsonDict = (NSDictionary *)jsonObj;
-
-                    FSOAuthErrorCode errorCode = FSOAuthErrorNone;
                     
                     if (jsonDict[@"error"]) {
                         errorCode = [self errorCodeForString:jsonDict[@"error"]];
+                    } else {
+                        error = FSOAuthErrorNone;
                     }
                     
-                    completionBlock(jsonDict[@"access_token"], YES, errorCode);
-                    return;
+                    accessToken = jsonDict[@"access_token"];
+                    requestCompleted = YES;
                 }
             }
-            completionBlock(nil, NO, FSOAuthErrorNone);
-        }];
-    }
-}
-
-- (NSString *)urlEncodedStringForString:(NSString *)string {
-    NSString *urlEncodedString = nil;
-    // Introduced in iOS 7, -stringByAddingPercentEncodingWithAllowedCharacters: replaces CFURLCreateStringByAddingPercentEscapes (deprecated in iOS 9).
-    if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
-        urlEncodedString = [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    }
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        urlEncodedString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                                           (CFStringRef)string,
-                                                                                                           NULL,
-                                                                                                           (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                                           kCFStringEncodingUTF8);
-#pragma clang diagnostic pop
-    }
-    
-    return urlEncodedString;
-}
-
-- (void)sendAsynchronousRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))completionHandler
-{
-    // Introduced in iOS 7, NSURLSession replaces NSURLConnection (deprecated in iOS 9).
-    if ([NSURLSession class]) {
-        [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (completionHandler) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completionHandler(response, data, error);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completionBlock(accessToken, requestCompleted, errorCode);
+            });
         }] resume];
-    }
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:completionHandler];
-#pragma clang diagnostic pop
     }
 }
 
