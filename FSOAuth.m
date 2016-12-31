@@ -116,27 +116,22 @@
         *errorCode = FSOAuthErrorUnknown;
     }
     
-    NSArray *parameterPairs = [[url query] componentsSeparatedByString:@"&"];
+    NSArray<NSURLQueryItem *> *queryItems = [[NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES] queryItems];
     
-    for (NSString *pair in parameterPairs) {
-        NSArray *keyValue = [pair componentsSeparatedByString:@"="];
-        if ([keyValue count] == 2) {
-            NSString *param = keyValue[0];
-            NSString *value = keyValue[1];
+    for (NSURLQueryItem *queryItem in queryItems) {
+        
+        if ([queryItem.name isEqualToString:@"code"]) {
+            accessCode = queryItem.value;
             
-            if ([param isEqualToString:@"code"]) {
-                accessCode = value;
-                
-                if (errorCode != NULL) {
-                    if (*errorCode == FSOAuthErrorUnknown) { // don't clobber any previously found real error value
-                        *errorCode = FSOAuthErrorNone;
-                    }
+            if (errorCode != NULL) {
+                if (*errorCode == FSOAuthErrorUnknown) { // don't clobber any previously found real error value
+                    *errorCode = FSOAuthErrorNone;
                 }
             }
-            else if ([param isEqualToString:@"error"]) {
-                if (errorCode != NULL) {
-                    *errorCode = [self errorCodeForString:value];
-                }
+        }
+        else if ([queryItem.name isEqualToString:@"error"]) {
+            if (errorCode != NULL) {
+                *errorCode = [self errorCodeForString:queryItem.value];
             }
         }
     }
