@@ -78,8 +78,7 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString * _Nullable authToken, BO
  */
 - (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(nullable NSString *)nativeURICallbackString
-                           allowShowingAppStore:(BOOL)allowShowingAppStore
-                      presentFromViewController:(UIViewController *)presentFromViewController;
+                           allowShowingAppStore:(BOOL)allowShowingAppStore;
 
 /**
  Given the OAuth response URL, will return the access code for the authorized user, or nil if there was an error in authorization.

@@ -32,8 +32,7 @@
 
 - (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(NSString *)nativeURICallbackString
-                           allowShowingAppStore:(BOOL)allowShowingAppStore
-                      presentFromViewController:(UIViewController *)presentFromViewController {
+                           allowShowingAppStore:(BOOL)allowShowingAppStore {
     if ([clientID length] <= 0) {
         return FSOAuthStatusErrorInvalidClientID;
     }
