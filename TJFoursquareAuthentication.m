@@ -195,6 +195,7 @@ static void (^_tj_completion)(NSString *accessToken);
         [self setTj_clientIdentifier:nil];
         [self setTj_redirectURI:nil];
         [self setTj_clientSecret:nil];
+        [self setTj_completion:nil];
         
         handledURL = YES;
     }
