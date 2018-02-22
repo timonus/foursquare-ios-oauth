@@ -15,7 +15,7 @@
 //
 
 #import "FSViewController.h"
-#import "FSOAuth.h"
+#import "TJFoursquareAuthentication.h"
 
 @interface FSViewController ()
 
@@ -29,123 +29,23 @@
 
     [self dismissKeyboard:nil];
     
-    // The testing app currently does not support universal url callbacks
-    FSOAuthStatusCode statusCode = [[FSOAuth shared] authorizeUserUsingClientId:self.clientIdField.text
-                                                        nativeURICallbackString:self.callbackUrlField.text
-                                                     universalURICallbackString:self.universalLinkCallbackUrlField.text
-                                                           allowShowingAppStore:YES
-                                                      presentFromViewController:self];
-    
-    NSString *resultText = nil;
-    
-    switch (statusCode) {
-        case FSOAuthStatusSuccess:
-            // do nothing
-            break;
-        case FSOAuthStatusErrorInvalidCallback: {
-            resultText = @"Invalid callback URI";
-            break;
-        }
-        case FSOAuthStatusErrorFoursquareNotInstalled: {
-            resultText = @"Foursquare not installed";
-            break;
-        }
-        case FSOAuthStatusErrorInvalidClientID: {
-            resultText = @"Invalid client id";
-            break;
-        }
-        case FSOAuthStatusErrorFoursquareOAuthNotSupported: {
-            resultText = @"Installed FSQ app does not support oauth";
-            break;
-        }
-        default: {
-            resultText = @"Unknown status code returned";
-            break;
-        }
-    }
-    self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
+    [TJFoursquareAuthentication authenticateWithClientIdentifier:self.clientIdField.text
+                                                     redirectURI:[NSURL URLWithString:self.callbackUrlField.text]
+                                                    clientSecret:self.clientSecretField.text
+                                                      completion:^(NSString * _Nullable accessToken) {
+                                                          if (accessToken.length > 0) {
+                                                              self.resultLabel.text = [NSString stringWithFormat:@"Token: %@", accessToken];
+                                                          } else {
+                                                              self.resultLabel.text = @"Auth error";
+                                                          }
+                                                      }];
 }
 
-- (NSString *)errorMessageForCode:(FSOAuthErrorCode)errorCode {
-    NSString *resultText = nil;
-    
-    switch (errorCode) {
-        case FSOAuthErrorNone: {
-            break;
-        }
-        case FSOAuthErrorInvalidClient: {
-            resultText = @"Invalid client error";
-            break;
-        }
-        case FSOAuthErrorInvalidGrant: {
-            resultText = @"Invalid grant error";
-            break;
-        }
-        case FSOAuthErrorInvalidRequest: {
-            resultText =  @"Invalid request error";
-            break;
-        }
-        case FSOAuthErrorUnauthorizedClient: {
-            resultText =  @"Invalid unauthorized client error";
-            break;
-        }
-        case FSOAuthErrorUnsupportedGrantType: {
-            resultText =  @"Invalid unsupported grant error";
-            break;
-        }
-        case FSOAuthErrorUnknown:
-        default: {
-            resultText =  @"Unknown error";
-            break;
-        }
+- (void)handleURL:(NSURL *)url
+{
+    if ([TJFoursquareAuthentication tryHandleAuthenticationCallbackWithURL:url]) {
+        self.resultLabel.text = @"Handled incoming URL";
     }
-    
-    return resultText;
-}
-
-- (void)handleURL:(NSURL *)url {
-    if ([[url scheme] isEqualToString:@"fsoauthexample"]) {
-        FSOAuthErrorCode errorCode;
-        NSString *accessCode = [[FSOAuth shared] accessCodeForFSOAuthURL:url error:&errorCode];;
-        
-        NSString *resultText = nil;
-        if (errorCode == FSOAuthErrorNone) {
-            resultText = [NSString stringWithFormat:@"Access code: %@", accessCode];
-            self.latestAccessCode = accessCode;
-        }
-        else {
-            resultText = [self errorMessageForCode:errorCode];
-        }
-
-        self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
-    }
-}
-
-- (void)convertTapped:(id)sender {
-    
-    [self dismissKeyboard:nil];
-    
-    [[FSOAuth shared] requestAccessTokenForCode:self.latestAccessCode
-                                       clientId:self.clientIdField.text
-                              callbackURIString:self.callbackUrlField.text
-                                   clientSecret:self.clientSecretField.text
-                                completionBlock:^(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode) {
-                                    
-                                    NSString *resultText = nil;
-                                    if (requestCompleted) {
-                                        if (errorCode == FSOAuthErrorNone) {
-                                            resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
-                                        }
-                                        else {
-                                            resultText = [self errorMessageForCode:errorCode];
-                                        }
-                                    }
-                                    else {
-                                        resultText = @"An error occurred when attempting to connect to the Foursquare server.";
-                                    }
-                                    
-                                    self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
-                                }];
 }
 
 - (void)dismissKeyboard:(id)sender {

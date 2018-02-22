@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2243DD1F203F2BAF00042708 /* TJFoursquareAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 2243DD1D203F2BAE00042708 /* TJFoursquareAuthentication.m */; };
 		309768F71CDD3D1D009E6193 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 309768F61CDD3D1D009E6193 /* SafariServices.framework */; };
 		F10698A51729B6F50053AF0B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10698A41729B6F50053AF0B /* UIKit.framework */; };
 		F10698A71729B6F50053AF0B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10698A61729B6F50053AF0B /* Foundation.framework */; };
@@ -19,13 +20,14 @@
 		F10698BB1729B6F50053AF0B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F10698BA1729B6F50053AF0B /* Default-568h@2x.png */; };
 		F10698BE1729B6F50053AF0B /* FSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F10698BD1729B6F50053AF0B /* FSViewController.m */; };
 		F10698C11729B6F50053AF0B /* FSViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F10698BF1729B6F50053AF0B /* FSViewController.xib */; };
-		F10698C91729B70E0053AF0B /* FSOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = F10698C81729B70E0053AF0B /* FSOAuth.m */; };
 		F175C8E01739BB7E007D7FF9 /* connect-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DE1739BB7E007D7FF9 /* connect-blue.png */; };
 		F175C8E11739BB7E007D7FF9 /* connect-blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */; };
 		F189B5FD183EA2ED009FB6B0 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2243DD1D203F2BAE00042708 /* TJFoursquareAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TJFoursquareAuthentication.m; path = ../../TJFoursquareAuthentication.m; sourceTree = "<group>"; };
+		2243DD1E203F2BAF00042708 /* TJFoursquareAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TJFoursquareAuthentication.h; path = ../../TJFoursquareAuthentication.h; sourceTree = "<group>"; };
 		309768F61CDD3D1D009E6193 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F10698A11729B6F50053AF0B /* FSExampleOAuth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FSExampleOAuth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10698A41729B6F50053AF0B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -43,8 +45,6 @@
 		F10698BC1729B6F50053AF0B /* FSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FSViewController.h; sourceTree = "<group>"; };
 		F10698BD1729B6F50053AF0B /* FSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FSViewController.m; sourceTree = "<group>"; };
 		F10698C01729B6F50053AF0B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/FSViewController.xib; sourceTree = "<group>"; };
-		F10698C71729B70E0053AF0B /* FSOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FSOAuth.h; path = ../../FSOAuth.h; sourceTree = "<group>"; };
-		F10698C81729B70E0053AF0B /* FSOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FSOAuth.m; path = ../../FSOAuth.m; sourceTree = "<group>"; };
 		F175C8DE1739BB7E007D7FF9 /* connect-blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue.png"; sourceTree = "<group>"; };
 		F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue@2x.png"; sourceTree = "<group>"; };
 		F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -98,8 +98,8 @@
 		F10698AA1729B6F50053AF0B /* FSExampleOAuth */ = {
 			isa = PBXGroup;
 			children = (
-				F10698C71729B70E0053AF0B /* FSOAuth.h */,
-				F10698C81729B70E0053AF0B /* FSOAuth.m */,
+				2243DD1E203F2BAF00042708 /* TJFoursquareAuthentication.h */,
+				2243DD1D203F2BAE00042708 /* TJFoursquareAuthentication.m */,
 				F10698B31729B6F50053AF0B /* FSAppDelegate.h */,
 				F10698B41729B6F50053AF0B /* FSAppDelegate.m */,
 				F10698BC1729B6F50053AF0B /* FSViewController.h */,
@@ -202,8 +202,8 @@
 			files = (
 				F10698B11729B6F50053AF0B /* main.m in Sources */,
 				F10698B51729B6F50053AF0B /* FSAppDelegate.m in Sources */,
+				2243DD1F203F2BAF00042708 /* TJFoursquareAuthentication.m in Sources */,
 				F10698BE1729B6F50053AF0B /* FSViewController.m in Sources */,
-				F10698C91729B70E0053AF0B /* FSOAuth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +293,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FSExampleOAuth/FSExampleOAuth-Prefix.pch";
 				INFOPLIST_FILE = "FSExampleOAuth/FSExampleOAuth-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -307,6 +308,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FSExampleOAuth/FSExampleOAuth-Prefix.pch";
 				INFOPLIST_FILE = "FSExampleOAuth/FSExampleOAuth-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
