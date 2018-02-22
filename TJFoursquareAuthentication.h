@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)authenticateWithClientIdentifier:(NSString *const)clientIdentifier
                              redirectURI:(NSURL *const)redirectURI
                             clientSecret:(NSString *const)clientSecret
-                              completion:(void (^)(NSString *_Nullable accessToken))completion;
+                              completion:(void (^)(NSString *_Nullable accessToken))completion API_AVAILABLE(ios(8.0));
 
-+ (BOOL)tryHandleNativeAuthenticationWithURL:(NSURL *const)url;
++ (BOOL)tryHandleAuthenticationCallbackWithURL:(NSURL *const)url API_AVAILABLE(ios(8.0));
 
 @end
 

@@ -125,11 +125,11 @@ static void (^_tj_completion)(NSString *accessToken);
                                              callbackURLScheme:redirectURI.scheme
                                              completionHandler:^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
                                                  // Process results.
-                                                 [self tryHandleNativeAuthenticationWithURL:callbackURL
-                                                                           clientIdentifier:clientIdentifier
-                                                                                redirectURI:redirectURI
-                                                                               clientSecret:clientSecret
-                                                                                 completion:completion];
+                                                 [self tryHandleAuthenticationCallbackWithURL:callbackURL
+                                                                             clientIdentifier:clientIdentifier
+                                                                                  redirectURI:redirectURI
+                                                                                 clientSecret:clientSecret
+                                                                                   completion:completion];
                                                  // Break reference so session is deallocated.
                                                  session = nil;
                                              }];
@@ -139,20 +139,20 @@ static void (^_tj_completion)(NSString *accessToken);
     }
 }
 
-+ (BOOL)tryHandleNativeAuthenticationWithURL:(NSURL *const)url
++ (BOOL)tryHandleAuthenticationCallbackWithURL:(NSURL *const)url
 {
-    return [self tryHandleNativeAuthenticationWithURL:url
-                                     clientIdentifier:[self tj_clientIdentifier]
-                                          redirectURI:[self tj_redirectURI]
-                                         clientSecret:[self tj_clientSecret]
-                                           completion:[self tj_completion]];
+    return [self tryHandleAuthenticationCallbackWithURL:url
+                                       clientIdentifier:[self tj_clientIdentifier]
+                                            redirectURI:[self tj_redirectURI]
+                                           clientSecret:[self tj_clientSecret]
+                                             completion:[self tj_completion]];
 }
 
-+ (BOOL)tryHandleNativeAuthenticationWithURL:(NSURL *const)url
-                            clientIdentifier:(NSString *const)clientIdentifier
-                                 redirectURI:(NSURL *const)redirectURI
-                                clientSecret:(NSString *const)clientSecret
-                                  completion:(void (^)(NSString *))completion
++ (BOOL)tryHandleAuthenticationCallbackWithURL:(NSURL *const)url
+                              clientIdentifier:(NSString *const)clientIdentifier
+                                   redirectURI:(NSURL *const)redirectURI
+                                  clientSecret:(NSString *const)clientSecret
+                                    completion:(void (^)(NSString *))completion
 {
     BOOL handledURL = NO;
     if ([url.absoluteString hasPrefix:redirectURI.absoluteString]) {
