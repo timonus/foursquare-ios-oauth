@@ -155,7 +155,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                     completion:(void (^)(NSString *))completion
 {
     BOOL handledURL = NO;
-    if ([url.absoluteString hasPrefix:redirectURI.absoluteString]) {
+    if (redirectURI && [url.absoluteString hasPrefix:redirectURI.absoluteString]) {
         NSURLComponents *const components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
         NSString *code = nil;
         for (NSURLQueryItem *queryItem in components.queryItems) {
