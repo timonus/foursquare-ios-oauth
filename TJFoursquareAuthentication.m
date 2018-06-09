@@ -8,6 +8,10 @@
 #import "TJFoursquareAuthentication.h"
 #import <SafariServices/SafariServices.h>
 
+#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_12_0
+#import <AuthenticationServices/AuthenticationServices.h>
+#endif
+
 @interface TJFoursquareAuthentication ()
 
 @property (nonatomic, copy, class) NSString *tj_clientIdentifier;
@@ -120,22 +124,31 @@ static void (^_tj_completion)(NSString *accessToken);
                                  [NSURLQueryItem queryItemWithName:@"redirect_uri" value:redirectURI.absoluteString],
                                  ];
     NSURL *const url = urlComponents.URL;
+    
+    // Reference needs to be held as long as this is in progress, otherwise the UI disappears.
+    static id session = nil;
+    void (^completionHandler)(NSURL *, NSError *) = ^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
+        // Process results.
+        [self tryHandleAuthenticationCallbackWithURL:callbackURL
+                                    clientIdentifier:clientIdentifier
+                                         redirectURI:redirectURI
+                                        clientSecret:clientSecret
+                                          completion:completion];
+        // Break reference so session is deallocated.
+        session = nil;
+    };
+#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_12_0
+    if (@available(iOS 12.0, *)) {
+        session = [[ASWebAuthenticationSession alloc] initWithURL:url
+                                                callbackURLScheme:redirectURI.scheme
+                                                completionHandler:completionHandler];
+        [(ASWebAuthenticationSession *)session start];
+    } else
+#endif
     if (@available(iOS 11.0, *)) {
-        // Reference needs to be held as long as this is in progress, otherwise the UI disappears.
-        static SFAuthenticationSession *session = nil;
-        
         session = [[SFAuthenticationSession alloc] initWithURL:url
                                              callbackURLScheme:redirectURI.scheme
-                                             completionHandler:^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
-                                                 // Process results.
-                                                 [self tryHandleAuthenticationCallbackWithURL:callbackURL
-                                                                             clientIdentifier:clientIdentifier
-                                                                                  redirectURI:redirectURI
-                                                                                 clientSecret:clientSecret
-                                                                                   completion:completion];
-                                                 // Break reference so session is deallocated.
-                                                 session = nil;
-                                             }];
+                                             completionHandler:completionHandler];
         [(SFAuthenticationSession *)session start];
     } else if (@available(iOS 10.0, *)) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
