@@ -97,7 +97,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                      }
                                  }];
     } else if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     } else {
         [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                               redirectURI:redirectURI
@@ -135,7 +135,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                              }];
         [(SFAuthenticationSession *)session start];
     } else {
-        [[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }
 }
 
