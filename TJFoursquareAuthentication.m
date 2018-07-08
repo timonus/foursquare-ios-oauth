@@ -97,7 +97,10 @@ static void (^_tj_completion)(NSString *accessToken);
                                      }
                                  }];
     } else if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[UIApplication sharedApplication] openURL:url];
+#pragma clang diagnostic pop
     } else {
         [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                               redirectURI:redirectURI
@@ -134,8 +137,13 @@ static void (^_tj_completion)(NSString *accessToken);
                                                  session = nil;
                                              }];
         [(SFAuthenticationSession *)session start];
-    } else {
+    } else if (@available(iOS 10.0, *)) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[UIApplication sharedApplication] openURL:url];
+#pragma clang diagnostic pop
     }
 }
 
