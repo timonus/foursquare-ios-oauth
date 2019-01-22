@@ -7,10 +7,7 @@
 
 #import "TJFoursquareAuthentication.h"
 #import <SafariServices/SafariServices.h>
-
-#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_12_0
 #import <AuthenticationServices/AuthenticationServices.h>
-#endif
 
 @interface TJFoursquareAuthentication ()
 
@@ -136,15 +133,12 @@ static void (^_tj_completion)(NSString *accessToken);
         // Break reference so session is deallocated.
         session = nil;
     };
-#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_12_0
     if (@available(iOS 12.0, *)) {
         session = [[ASWebAuthenticationSession alloc] initWithURL:url
                                                 callbackURLScheme:redirectURI.scheme
                                                 completionHandler:completionHandler];
         [(ASWebAuthenticationSession *)session start];
-    } else
-#endif
-    if (@available(iOS 11.0, *)) {
+    } else if (@available(iOS 11.0, *)) {
         session = [[SFAuthenticationSession alloc] initWithURL:url
                                              callbackURLScheme:redirectURI.scheme
                                              completionHandler:completionHandler];
