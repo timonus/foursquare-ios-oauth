@@ -137,6 +137,9 @@ static void (^_tj_completion)(NSString *accessToken);
         session = [[ASWebAuthenticationSession alloc] initWithURL:url
                                                 callbackURLScheme:redirectURI.scheme
                                                 completionHandler:completionHandler];
+        if (@available(iOS 13.0, *)) {
+            [(ASWebAuthenticationSession *)session setPresentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)self];
+        }
         [(ASWebAuthenticationSession *)session start];
     } else if (@available(iOS 11.0, *)) {
         session = [[SFAuthenticationSession alloc] initWithURL:url
@@ -213,6 +216,13 @@ static void (^_tj_completion)(NSString *accessToken);
         handledURL = YES;
     }
     return handledURL;
+}
+
+#pragma mark - ASWebAuthenticationPresentationContextProviding
+
++ (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0))
+{
+    return [[UIApplication sharedApplication] keyWindow];
 }
 
 @end
