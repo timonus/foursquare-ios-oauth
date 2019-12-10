@@ -28,4 +28,4 @@ This is a hard fork of the [FSOAuth project](https://github.com/foursquare/fours
 
 - `TJFoursquareAuthentication` is compatible with iOS 8 and above.
 - `TJFoursquareAuthentication` supports app-to-app auth with the Foursquare app.
-- On iOS 11 and above `TJFoursquareAuthentication` will fall back to using `SFAuthenticationSession` if app-to-app auth isn't available. On older iOS versions it will launch Safari.app to perform auth.
+- `TJFoursquareAuthentication` will fall back to using `ASWebAuthenticationSession` or `SFAuthenticationSession` depending on iOS version if app-to-app auth isn't available. On older iOS versions it will launch Safari.app to perform auth.
