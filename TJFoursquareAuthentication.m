@@ -74,11 +74,6 @@ static void (^_tj_completion)(NSString *accessToken);
                             clientSecret:(NSString *const)clientSecret
                               completion:(void (^)(NSString *))completion
 {
-    [self setTj_clientIdentifier:clientIdentifier];
-    [self setTj_redirectURI:redirectURI];
-    [self setTj_clientSecret:clientSecret];
-    [self setTj_completion:completion];
-    
     NSURLComponents *const urlComponents = [NSURLComponents componentsWithString:@"foursquareauth://authorize"];
     urlComponents.queryItems = @[[NSURLQueryItem queryItemWithName:@"client_id" value:clientIdentifier],
                                  [NSURLQueryItem queryItemWithName:@"v" value:@"20130509"],
@@ -99,6 +94,11 @@ static void (^_tj_completion)(NSString *accessToken);
                                  }];
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
     } else if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [self setTj_clientIdentifier:clientIdentifier];
+        [self setTj_redirectURI:redirectURI];
+        [self setTj_clientSecret:clientSecret];
+        [self setTj_completion:completion];
+        
         [[UIApplication sharedApplication] openURL:url];
 #endif
     } else {
@@ -146,12 +146,19 @@ static void (^_tj_completion)(NSString *accessToken);
                                              callbackURLScheme:redirectURI.scheme
                                              completionHandler:completionHandler];
         [(SFAuthenticationSession *)session start];
-    } else if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
     } else {
-        [[UIApplication sharedApplication] openURL:url];
+        [self setTj_clientIdentifier:clientIdentifier];
+        [self setTj_redirectURI:redirectURI];
+        [self setTj_clientSecret:clientSecret];
+        [self setTj_completion:completion];
+        
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
+        } else {
+            [[UIApplication sharedApplication] openURL:url];
 #endif
+        }
     }
 }
 
