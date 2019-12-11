@@ -85,7 +85,12 @@ static void (^_tj_completion)(NSString *accessToken);
         [[UIApplication sharedApplication] openURL:url
                                            options:@{}
                                  completionHandler:^(BOOL success) {
-                                     if (!success) {
+                                     if (success) {
+                                         [self setTj_clientIdentifier:clientIdentifier];
+                                         [self setTj_redirectURI:redirectURI];
+                                         [self setTj_clientSecret:clientSecret];
+                                         [self setTj_completion:completion];
+                                     } else {
                                          [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                                                                redirectURI:redirectURI
                                                                               clientSecret:clientSecret
