@@ -9,7 +9,7 @@ This is a hard fork of the [FSOAuth project](https://github.com/foursquare/fours
 3. Add `foursquareauth` to your app's info.plist's `LSApplicationQueriesSchemes` array. (Optional, but provides a better experience for those running OS versions prior to iOS 10.0).
 4. Before you can authenticate, you should include a call to `+tryHandleAuthenticationCallbackWithURL:` in your app delegate's `-application:openURL:options:` implementation like so.
 
-```
+```objc
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options
 {
     if ([TJFoursquareAuthentication tryHandleAuthenticationCallbackWithURL:url]) {
