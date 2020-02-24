@@ -146,11 +146,13 @@ static void (^_tj_completion)(NSString *accessToken);
             [(ASWebAuthenticationSession *)session setPresentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)self];
         }
         [(ASWebAuthenticationSession *)session start];
+#if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
     } else if (@available(iOS 11.0, *)) {
         session = [[SFAuthenticationSession alloc] initWithURL:url
                                              callbackURLScheme:redirectURI.scheme
                                              completionHandler:completionHandler];
         [(SFAuthenticationSession *)session start];
+#endif
     } else {
         [self setTj_clientIdentifier:clientIdentifier];
         [self setTj_redirectURI:redirectURI];
