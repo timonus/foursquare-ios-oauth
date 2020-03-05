@@ -104,7 +104,10 @@ static void (^_tj_completion)(NSString *accessToken);
         [self setTj_clientSecret:clientSecret];
         [self setTj_completion:completion];
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[UIApplication sharedApplication] openURL:url];
+#pragma clang diagnostic pop
 #endif
     } else {
         [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
@@ -148,10 +151,13 @@ static void (^_tj_completion)(NSString *accessToken);
         [(ASWebAuthenticationSession *)session start];
 #if defined(__IPHONE_12_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
     } else if (@available(iOS 11.0, *)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         session = [[SFAuthenticationSession alloc] initWithURL:url
                                              callbackURLScheme:redirectURI.scheme
                                              completionHandler:completionHandler];
         [(SFAuthenticationSession *)session start];
+#pragma clang diagnostic pop
 #endif
     } else {
         [self setTj_clientIdentifier:clientIdentifier];
@@ -163,7 +169,10 @@ static void (^_tj_completion)(NSString *accessToken);
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
         } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [[UIApplication sharedApplication] openURL:url];
+#pragma clang diagnostic pop
 #endif
         }
     }
