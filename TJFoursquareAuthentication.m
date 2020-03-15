@@ -160,15 +160,23 @@ static void (^_tj_completion)(NSString *accessToken);
 #pragma clang diagnostic pop
 #endif
     } else {
-        [self setTj_clientIdentifier:clientIdentifier];
-        [self setTj_redirectURI:redirectURI];
-        [self setTj_clientSecret:clientSecret];
-        [self setTj_completion:completion];
-        
         if (@available(iOS 10.0, *)) {
-            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+                if (success) {
+                    [self setTj_clientIdentifier:clientIdentifier];
+                    [self setTj_redirectURI:redirectURI];
+                    [self setTj_clientSecret:clientSecret];
+                    [self setTj_completion:completion];
+                } else {
+                    completion(nil);
+                }
+            }];
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
         } else {
+            [self setTj_clientIdentifier:clientIdentifier];
+            [self setTj_redirectURI:redirectURI];
+            [self setTj_clientSecret:clientSecret];
+            [self setTj_completion:completion];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [[UIApplication sharedApplication] openURL:url];
