@@ -74,6 +74,12 @@ static void (^_tj_completion)(NSString *accessToken);
                             clientSecret:(NSString *const)clientSecret
                               completion:(void (^)(NSString *))completion
 {
+    if (![[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"CFBundleURLTypes.CFBundleURLSchemes.@unionOfArrays.self"] containsObject:redirectURI.scheme]) { // https://forums.developer.apple.com/thread/31307
+        NSAssert(NO, @"You must add the \"%@\" scheme to your info.plist's \"CFBundleURLTypes\"", redirectURI.scheme);
+        completion(nil);
+        return;
+    }
+    
     NSURLComponents *const urlComponents = [NSURLComponents componentsWithString:@"foursquareauth://authorize"];
     urlComponents.queryItems = @[[NSURLQueryItem queryItemWithName:@"client_id" value:clientIdentifier],
                                  [NSURLQueryItem queryItemWithName:@"v" value:@"20130509"],
