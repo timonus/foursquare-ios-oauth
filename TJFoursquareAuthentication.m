@@ -103,7 +103,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                                                                 completion:completion];
                                      }
                                  }];
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
+#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
     } else if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [self setTj_clientIdentifier:clientIdentifier];
         [self setTj_redirectURI:redirectURI];
