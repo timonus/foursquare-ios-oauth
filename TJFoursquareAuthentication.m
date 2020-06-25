@@ -9,6 +9,22 @@
 #import <SafariServices/SafariServices.h>
 #import <AuthenticationServices/AuthenticationServices.h>
 
+// DO NOT mark as Obj-C direct, will lead to exceptions.
+@interface TJFoursquareAuthenticatorWebAuthenticationPresentationContextProvider : NSObject
+
+@end
+
+@implementation TJFoursquareAuthenticatorWebAuthenticationPresentationContextProvider
+
+#pragma mark - ASWebAuthenticationPresentationContextProviding
+
++ (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0))
+{
+    return [[UIApplication sharedApplication] keyWindow];
+}
+
+@end
+
 #if defined(__has_attribute) && __has_attribute(objc_direct_members)
 __attribute__((objc_direct_members))
 #endif
@@ -158,7 +174,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                                 callbackURLScheme:redirectURI.scheme
                                                 completionHandler:completionHandler];
         if (@available(iOS 13.0, *)) {
-            [(ASWebAuthenticationSession *)session setPresentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)self];
+            [(ASWebAuthenticationSession *)session setPresentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)[TJFoursquareAuthenticatorWebAuthenticationPresentationContextProvider class]];
         }
         [(ASWebAuthenticationSession *)session start];
 #if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
