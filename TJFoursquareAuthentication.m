@@ -31,7 +31,7 @@ __attribute__((objc_direct_members))
 @interface TJFoursquareAuthentication ()
 
 @property (nonatomic, copy, class) NSString *tj_clientIdentifier;
-@property (nonatomic, strong, class) NSURL *tj_redirectURI;
+@property (nonatomic, class) NSURL *tj_redirectURI;
 @property (nonatomic, copy, class) NSString *tj_clientSecret;
 @property (nonatomic, copy, class) void (^tj_completion)(NSString *accessToken);
 
