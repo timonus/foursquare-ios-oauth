@@ -160,7 +160,7 @@ static void (^_tj_completion)(NSString *accessToken);
     NSURL *const url = urlComponents.URL;
     
     // Reference needs to be held as long as this is in progress, otherwise the UI disappears.
-    static id session = nil;
+    static id session;
     void (^completionHandler)(NSURL *, NSError *) = ^(NSURL * _Nullable callbackURL, NSError * _Nullable error) {
         // Process results.
         [self tryHandleAuthenticationCallbackWithURL:callbackURL
