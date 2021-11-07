@@ -250,14 +250,8 @@ static void (^_tj_completion)(NSString *accessToken);
                                          [NSURLQueryItem queryItemWithName:@"redirect_uri" value:redirectURI.absoluteString],
                                          [NSURLQueryItem queryItemWithName:@"code" value:code],
                                          ];
-            NSMutableURLRequest *const request = [NSMutableURLRequest requestWithURL:urlComponents.URL];
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-    if (@available(iOS 15.0, *)) {
-        request.attribution = NSURLRequestAttributionUser;
-    }
-#endif
-            [[[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration]] dataTaskWithRequest:request
-                                                                                                                  completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            [[[NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration]] dataTaskWithURL:urlComponents.URL
+                                                                                                              completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                                                                                                   NSString *accessToken = nil;
                                                                                                                   if (data.length > 0) {
                                                                                                                       const id jsonObject = [NSJSONSerialization JSONObjectWithData:data
