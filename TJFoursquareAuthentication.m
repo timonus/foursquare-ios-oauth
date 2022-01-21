@@ -279,11 +279,4 @@ static void (^_tj_completion)(NSString *accessToken);
     return handledURL;
 }
 
-#pragma mark - ASWebAuthenticationPresentationContextProviding
-
-+ (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0))
-{
-    return [[UIApplication sharedApplication] keyWindow];
-}
-
 @end
