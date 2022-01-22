@@ -22,7 +22,10 @@
 
 + (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0))
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return [[UIApplication sharedApplication] keyWindow];
+#pragma clang diagnostic pop
 }
 
 @end
@@ -96,6 +99,7 @@ static void (^_tj_completion)(NSString *accessToken);
 + (void)authenticateWithClientIdentifier:(NSString *const)clientIdentifier
                              redirectURI:(NSURL *const)redirectURI
                             clientSecret:(NSString *const)clientSecret
+             presentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)presentationContextProvider
                               completion:(void (^)(NSString *))completion
 {
     if (![[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"CFBundleURLTypes.CFBundleURLSchemes.@unionOfArrays.self"] containsObject:redirectURI.scheme]) { // https://forums.developer.apple.com/thread/31307
@@ -124,6 +128,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                          [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                                                                redirectURI:redirectURI
                                                                               clientSecret:clientSecret
+                                                               presentationContextProvider:presentationContextProvider
                                                                                 completion:completion];
                                      }
                                  }];
@@ -143,6 +148,7 @@ static void (^_tj_completion)(NSString *accessToken);
         [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                               redirectURI:redirectURI
                                              clientSecret:clientSecret
+                              presentationContextProvider:presentationContextProvider
                                                completion:completion];
     }
 }
@@ -150,6 +156,7 @@ static void (^_tj_completion)(NSString *accessToken);
 + (void)authenticateUsingSafariWithClientIdentifier:(NSString *const)clientIdentifier
                                         redirectURI:(NSURL *const)redirectURI
                                        clientSecret:(NSString *const)clientSecret
+                        presentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)presentationContextProvider
                                          completion:(void (^)(NSString *))completion
 {
     NSURLComponents *const urlComponents = [NSURLComponents componentsWithString:@"https://foursquare.com/oauth2/authenticate"];
@@ -176,7 +183,7 @@ static void (^_tj_completion)(NSString *accessToken);
                                                 callbackURLScheme:redirectURI.scheme
                                                 completionHandler:completionHandler];
         if (@available(iOS 13.0, *)) {
-            [(ASWebAuthenticationSession *)session setPresentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)[TJFoursquareAuthenticatorWebAuthenticationPresentationContextProvider class]];
+            [(ASWebAuthenticationSession *)session setPresentationContextProvider:presentationContextProvider ?: (id<ASWebAuthenticationPresentationContextProviding>)[TJFoursquareAuthenticatorWebAuthenticationPresentationContextProvider class]];
         }
         [(ASWebAuthenticationSession *)session start];
 #if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0

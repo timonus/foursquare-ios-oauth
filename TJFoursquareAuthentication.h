@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol ASWebAuthenticationPresentationContextProviding;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TJFoursquareAuthentication : NSObject
@@ -21,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)authenticateWithClientIdentifier:(NSString *const)clientIdentifier
                              redirectURI:(NSURL *const)redirectURI
                             clientSecret:(NSString *const)clientSecret
+             presentationContextProvider:(nullable id<ASWebAuthenticationPresentationContextProviding>)presentationContextProvider
                               completion:(void (^)(NSString *_Nullable accessToken))completion API_AVAILABLE(ios(8.0));
 
 /// Invoke this from your app delegate's implementation of -application:openURL:options:, returns whether or not the URL was a completion callback to Foursquare auth.
