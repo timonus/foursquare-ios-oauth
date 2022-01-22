@@ -99,7 +99,10 @@ static void (^_tj_completion)(NSString *accessToken);
 + (void)authenticateWithClientIdentifier:(NSString *const)clientIdentifier
                              redirectURI:(NSURL *const)redirectURI
                             clientSecret:(NSString *const)clientSecret
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
              presentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)presentationContextProvider
+#pragma clang diagnostic pop
                               completion:(void (^)(NSString *))completion
 {
     if (![[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"CFBundleURLTypes.CFBundleURLSchemes.@unionOfArrays.self"] containsObject:redirectURI.scheme]) { // https://forums.developer.apple.com/thread/31307
@@ -156,7 +159,10 @@ static void (^_tj_completion)(NSString *accessToken);
 + (void)authenticateUsingSafariWithClientIdentifier:(NSString *const)clientIdentifier
                                         redirectURI:(NSURL *const)redirectURI
                                        clientSecret:(NSString *const)clientSecret
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
                         presentationContextProvider:(id<ASWebAuthenticationPresentationContextProviding>)presentationContextProvider
+#pragma clang diagnostic pop
                                          completion:(void (^)(NSString *))completion
 {
     NSURLComponents *const urlComponents = [NSURLComponents componentsWithString:@"https://foursquare.com/oauth2/authenticate"];
