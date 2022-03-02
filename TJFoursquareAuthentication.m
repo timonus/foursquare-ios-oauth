@@ -35,10 +35,10 @@ __attribute__((objc_direct_members))
 #endif
 @interface TJFoursquareAuthentication ()
 
-@property (nonatomic, copy, class) NSString *tj_clientIdentifier;
-@property (nonatomic, class) NSURL *tj_redirectURI;
-@property (nonatomic, copy, class) NSString *tj_clientSecret;
-@property (nonatomic, copy, class) void (^tj_completion)(NSString *accessToken);
+@property (nonatomic, copy, class, setter=tj_setClientIdentifier:) NSString *tj_clientIdentifier;
+@property (nonatomic, class, setter=tj_setRedirectURI:) NSURL *tj_redirectURI;
+@property (nonatomic, copy, class, setter=tj_setClientSecret:) NSString *tj_clientSecret;
+@property (nonatomic, copy, class, setter=tj_setCompletion:) void (^tj_completion)(NSString *accessToken);
 
 @end
 
@@ -54,22 +54,22 @@ static NSURL *_tj_redirectURI;
 static NSString *_tj_clientSecret;
 static void (^_tj_completion)(NSString *accessToken);
 
-+ (void)setTj_clientIdentifier:(NSString *)tj_clientIdentifier
++ (void)tj_setClientIdentifier:(NSString *)tj_clientIdentifier
 {
     _tj_clientIdentifier = tj_clientIdentifier;
 }
 
-+ (void)setTj_redirectURI:(NSURL *)tj_redirectURI
++ (void)tj_setRedirectURI:(NSURL *)tj_redirectURI
 {
     _tj_redirectURI = tj_redirectURI;
 }
 
-+ (void)setTj_clientSecret:(NSString *)tj_clientSecret
++ (void)tj_setClientSecret:(NSString *)tj_clientSecret
 {
     _tj_clientSecret = tj_clientSecret;
 }
 
-+ (void)setTj_completion:(void (^)(NSString *))tj_completion
++ (void)tj_setCompletion:(void (^)(NSString *))tj_completion
 {
     _tj_completion = tj_completion;
 }
@@ -123,10 +123,10 @@ static void (^_tj_completion)(NSString *accessToken);
                                            options:@{}
                                  completionHandler:^(BOOL success) {
                                      if (success) {
-                                         [self setTj_clientIdentifier:clientIdentifier];
-                                         [self setTj_redirectURI:redirectURI];
-                                         [self setTj_clientSecret:clientSecret];
-                                         [self setTj_completion:completion];
+                                         [self tj_setClientIdentifier:clientIdentifier];
+                                         [self tj_setRedirectURI:redirectURI];
+                                         [self tj_setClientSecret:clientSecret];
+                                         [self tj_setCompletion:completion];
                                      } else {
                                          [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
                                                                                redirectURI:redirectURI
@@ -206,10 +206,10 @@ static void (^_tj_completion)(NSString *accessToken);
         if (@available(iOS 10.0, *)) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
                 if (success) {
-                    [self setTj_clientIdentifier:clientIdentifier];
-                    [self setTj_redirectURI:redirectURI];
-                    [self setTj_clientSecret:clientSecret];
-                    [self setTj_completion:completion];
+                    [self tj_setClientIdentifier:clientIdentifier];
+                    [self tj_setRedirectURI:redirectURI];
+                    [self tj_setClientSecret:clientSecret];
+                    [self tj_setCompletion:completion];
                 } else {
                     completion(nil);
                 }
@@ -282,10 +282,10 @@ static void (^_tj_completion)(NSString *accessToken);
             completion(nil);
         }
         
-        [self setTj_clientIdentifier:nil];
-        [self setTj_redirectURI:nil];
-        [self setTj_clientSecret:nil];
-        [self setTj_completion:nil];
+        [self tj_setClientIdentifier:nil];
+        [self tj_setRedirectURI:nil];
+        [self tj_setClientSecret:nil];
+        [self tj_setCompletion:nil];
         
         handledURL = YES;
     }
