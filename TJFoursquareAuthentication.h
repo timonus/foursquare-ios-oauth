@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// Invoke this from your app delegate's implementation of -application:openURL:options:, returns whether or not the URL was a completion callback to Foursquare auth.
 + (BOOL)tryHandleAuthenticationCallbackWithURL:(NSURL *const)url API_AVAILABLE(ios(8.0));
 
++ (BOOL)isFoursquareAppAvailable;
+
 @end
 
 NS_ASSUME_NONNULL_END

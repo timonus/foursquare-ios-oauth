@@ -292,4 +292,10 @@ static void (^_tj_completion)(NSString *accessToken);
     return handledURL;
 }
 
++ (BOOL)isFoursquareAppAvailable
+{
+    // Dec 15, 2024
+    return [[NSDate date] timeIntervalSince1970] < 1734220800.0;
+}
+
 @end
