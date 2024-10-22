@@ -105,12 +105,6 @@ static void (^_tj_completion)(NSString *accessToken);
 #pragma clang diagnostic pop
                               completion:(void (^)(NSString *))completion
 {
-    if (![[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"CFBundleURLTypes.CFBundleURLSchemes.@unionOfArrays.self"] containsObject:redirectURI.scheme]) { // https://forums.developer.apple.com/thread/31307
-        NSAssert(NO, @"You must add the \"%@\" scheme to your info.plist's \"CFBundleURLTypes\"", redirectURI.scheme);
-        completion(nil);
-        return;
-    }
-    
     NSURLComponents *const urlComponents = [NSURLComponents componentsWithString:@"foursquareauth://authorize"];
     urlComponents.queryItems = @[[NSURLQueryItem queryItemWithName:@"client_id" value:clientIdentifier],
                                  [NSURLQueryItem queryItemWithName:@"v" value:@"20130509"],
@@ -118,42 +112,53 @@ static void (^_tj_completion)(NSString *accessToken);
                                  ];
     NSURL *const url = urlComponents.URL;
     
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url
-                                           options:@{}
-                                 completionHandler:^(BOOL success) {
-                                     if (success) {
-                                         [self tj_setClientIdentifier:clientIdentifier];
-                                         [self tj_setRedirectURI:redirectURI];
-                                         [self tj_setClientSecret:clientSecret];
-                                         [self tj_setCompletion:completion];
-                                     } else {
-                                         [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
-                                                                               redirectURI:redirectURI
-                                                                              clientSecret:clientSecret
-                                                               presentationContextProvider:presentationContextProvider
-                                                                                completion:completion];
-                                     }
-                                 }];
+    if ([self isFoursquareAppAvailable]) {
 #if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-    } else if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [self setTj_clientIdentifier:clientIdentifier];
-        [self setTj_redirectURI:redirectURI];
-        [self setTj_clientSecret:clientSecret];
-        [self setTj_completion:completion];
-        
+        if (@available(iOS 10.0, *)) {
+#endif
+            [[UIApplication sharedApplication] openURL:url
+                                               options:@{}
+                                     completionHandler:^(BOOL success) {
+                if (success) {
+                    [self tj_setClientIdentifier:clientIdentifier];
+                    [self tj_setRedirectURI:redirectURI];
+                    [self tj_setClientSecret:clientSecret];
+                    [self tj_setCompletion:completion];
+                } else {
+                    [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
+                                                          redirectURI:redirectURI
+                                                         clientSecret:clientSecret
+                                          presentationContextProvider:presentationContextProvider
+                                                           completion:completion];
+                }
+            }];
+            return;
+#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
+        } else {
+            if (![[[[NSBundle mainBundle] infoDictionary] valueForKeyPath:@"CFBundleURLTypes.CFBundleURLSchemes.@unionOfArrays.self"] containsObject:redirectURI.scheme]) { // https://forums.developer.apple.com/thread/31307
+                NSAssert(NO, @"You must add the \"%@\" scheme to your info.plist's \"CFBundleURLTypes\"", redirectURI.scheme);
+            }
+            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                [self setTj_clientIdentifier:clientIdentifier];
+                [self setTj_redirectURI:redirectURI];
+                [self setTj_clientSecret:clientSecret];
+                [self setTj_completion:completion];
+                
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[UIApplication sharedApplication] openURL:url];
+                [[UIApplication sharedApplication] openURL:url];
 #pragma clang diagnostic pop
+                return;
+            }
+        }
 #endif
-    } else {
-        [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
-                                              redirectURI:redirectURI
-                                             clientSecret:clientSecret
-                              presentationContextProvider:presentationContextProvider
-                                               completion:completion];
     }
+    
+    [self authenticateUsingSafariWithClientIdentifier:clientIdentifier
+                                          redirectURI:redirectURI
+                                         clientSecret:clientSecret
+                          presentationContextProvider:presentationContextProvider
+                                           completion:completion];
 }
 
 + (void)authenticateUsingSafariWithClientIdentifier:(NSString *const)clientIdentifier
