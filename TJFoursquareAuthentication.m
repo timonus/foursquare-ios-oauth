@@ -248,10 +248,4 @@ static void (^_tj_completion)(NSString *accessToken);
     return handledURL;
 }
 
-+ (BOOL)isFoursquareSiteAvailable
-{
-    // April 28, 2025
-    return [[NSDate date] timeIntervalSince1970] < 1745798400.0;
-}
-
 @end
